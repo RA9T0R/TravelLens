@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
+import { Main } from "~/main/main";
 
 import api from "~/components/api";
 import { Link } from "react-router";
@@ -12,5 +13,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Welcome />;
+  return <div>
+    <Main/>
+   
+  </div>;
 }

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/*@import "tailwindcss";
 @import "tw-animate-css";
 
 @theme {
@@ -13,4 +13,11 @@ body {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+*/
+
+.select_img {
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid gray;
 }
