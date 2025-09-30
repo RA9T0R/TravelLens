@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Form, UploadFile, File, Depends, HTTPException
+from fastapi import FastAPI, UploadFile, File,Form, Depends, HTTPException
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,10 +35,10 @@ models.Base.metadata.create_all(bind=engine)
 @app.post("/predict/", response_model=schemas.SearchResult)
 async def predict(
     file: UploadFile = File(...), 
-    top_k: int = Form(...),  # <-- read top_k from form
+    top_k: int = Form(...),
     db: Session = Depends(get_db)
 ):
-    tmppath = f"temp{file.filename}"
+    tmp_path = f"temp_{file.filename}"
 
     # Save uploaded file temporarily
     with open(tmp_path, "wb") as f:

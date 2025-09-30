@@ -1,24 +1,14 @@
 # load_dataset.py
 import os
-import numpy as np
-from supabase import create_client
-from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from database import SessionLocal
-
-import crud
-from database import SessionLocal
 from embeddings import get_embedding
+import crud
 
-load_dotenv()
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-bucket_name = "Images"
-
+# ===== Dataset path =====
 dataset_path = "../models/Google_Images/train"
 
+# ===== Start DB session =====
 db: Session = SessionLocal()
 
 for folder in os.listdir(dataset_path):
@@ -33,17 +23,11 @@ for folder in os.listdir(dataset_path):
             continue
 
         # ---- Upload to Supabase bucket ----
-        remote_path = f"{folder}/{fname}"  # path inside bucket
         try:
-            with open(fpath, "rb") as f:
-                supabase.storage.from_(bucket_name).upload(remote_path, f, {"upsert": "true"})
+            url = crud.upload_image_to_supabase(fpath, folder)
         except Exception as e:
             print(f"Failed to upload {fpath}: {e}")
             continue
-
-        # ---- Get public URL ----
-        public_url = supabase.storage.from_(bucket_name).get_public_url(remote_path)
-        url = public_url['publicUrl'] if isinstance(public_url, dict) else public_url
 
         # ---- Generate embedding ----
         try:

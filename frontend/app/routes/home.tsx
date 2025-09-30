@@ -1,6 +1,5 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
-import { Main } from "~/main/main";
+import { Main } from "~/page/main";
 
 import api from "~/components/api";
 import { Link } from "react-router";
