@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+from fastapi import FastAPI, UploadFile, File,Form, Depends, HTTPException
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,7 +33,11 @@ models.Base.metadata.create_all(bind=engine)
 
 # ===== Predict Endpoint =====
 @app.post("/predict/", response_model=schemas.SearchResult)
-async def predict(file: UploadFile = File(...), top_k: int = 5, db: Session = Depends(get_db)):
+async def predict(
+    file: UploadFile = File(...), 
+    top_k: int = Form(...),
+    db: Session = Depends(get_db)
+):
     tmp_path = f"temp_{file.filename}"
 
     # Save uploaded file temporarily
@@ -44,12 +48,14 @@ async def predict(file: UploadFile = File(...), top_k: int = 5, db: Session = De
     try:
         query_embedding = get_embedding(tmp_path)
     except Exception as e:
+        os.remove(tmp_path)
         raise HTTPException(status_code=500, detail=f"Failed to get embedding: {e}")
 
     # Search similar images
     try:
         results = crud.search_similar(db, query_embedding.tolist(), k=top_k)
     except Exception as e:
+        os.remove(tmp_path)
         raise HTTPException(status_code=500, detail=f"DB search failed: {e}")
     finally:
         os.remove(tmp_path)  # Clean up temporary file
