@@ -53,7 +53,7 @@ const show_data = () => {
 
     return (
         <div className="container">
-            <h1 className="text-5xl">Dataset All Images</h1>
+            <h1 className="text-3xl lg:text-5xl mb-8 lg:mb-10">Dataset All Images</h1>
             <div className="max-images-control">
                 <label htmlFor="maxImagesInput"><h3>Max images :</h3></label>
                 <input id="maxImagesInput" type="number" value={inputMaxImages} onChange={handleInputChange} min={1} className="max-images-input"/>

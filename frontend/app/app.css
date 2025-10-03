@@ -1,9 +1,31 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* @theme {
+@custom-variant dark (&:where(.dark, .dark *));
+@theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-bg: #ffffff;       /* Main background */
+  --color-surface: #f8f9fa;  /* Cards / panels */
+  --color-text: #1a202c;     /* Main text */
+  --color-subtext: #4a5568;  /* Muted text */
+  --color-border: #e2e8f0;   /* Borders */
+  --color-primary: #2563eb;  /* Blue accent */
+  --color-secondary: #6b7280;/* Gray accent */
+
+  --color-Dark_bg: #121212;       /* Deep dark background */
+  --color-Dark_surface: #1e1e1e;  /* Cards / panels */
+  --color-Dark_text: #e2e8f0;     /* Main text */
+  --color-Dark_subtext: #a0aec0;  /* Muted text */
+  --color-Dark_border: #2d3748;   /* Subtle borders */
+  --color-Dark_primary: #3b82f6;  /* Lighter blue for contrast */
+  --color-Dark_secondary: #9ca3af;/* Gray accent */
+}
+
+* {
+  transition-property: background-color, color, border-color, fill, stroke;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
 }
 
 html,
