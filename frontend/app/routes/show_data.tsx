@@ -5,8 +5,8 @@ type ImageData = {
   [category: string]: string[];
 };
 
-export const ShowData: React.FC = () => {
-  const [data, setData] = useState<ImageData>({});
+const show_data = () => {
+    const [data, setData] = useState<ImageData>({});
 
   useEffect(() => {
     // สมมติ fetch จาก API หรือ database
@@ -32,6 +32,7 @@ export const ShowData: React.FC = () => {
     fetchData();
   }, []);
 
+
   return (
     <div className="container">
       {Object.entries(data).map(([category, images]) => (
@@ -47,5 +48,6 @@ export const ShowData: React.FC = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
+export default show_data

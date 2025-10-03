@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "~/components/api";
 import "../app.css"; // import ไฟล์ CSS
 
-export function Main() {
+const predict = () => {
   const [fileImage, setFileImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null); 
   const [topK, setTopK] = useState<number>(5);
@@ -49,6 +49,7 @@ export function Main() {
     }
   };
 
+
   return (
     <div className="container">
       <h1 className="title">Image Search</h1>
@@ -90,3 +91,4 @@ export function Main() {
     </div>
   );
 }
+export default predict
