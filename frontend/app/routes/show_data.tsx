@@ -1,53 +1,89 @@
 import React, { useEffect, useState } from "react";
 import "../app.css";
 
-type ImageData = {
-  [category: string]: string[];
+type ImageDataItem = {
+    label: string;
+    images: string[];
 };
 
 const show_data = () => {
-    const [data, setData] = useState<ImageData>({});
+    const [data, setData] = useState<ImageDataItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [openLabels, setOpenLabels] = useState<{ [key: string]: boolean }>({});
+    const [inputMaxImages, setInputMaxImages] = useState<number>(10);
+    const [maxImages, setMaxImages] = useState<number>(10);
 
-  useEffect(() => {
-    // สมมติ fetch จาก API หรือ database
-    const fetchData = async () => {
-      // ตัวอย่าง json
-      const json: ImageData = {
-        "Antarctica": [
-          "https://.../Antarctica/1.jpg",
-          "https://.../Antarctica/10.jpg",
-          "https://.../Antarctica/102.jpg"
-        ],
-        "Paris": [
-          "https://.../Paris/eiffel1.jpg",
-          "https://.../Paris/eiffel2.jpg"
-        ],
-        "Tokyo": [
-          "https://.../Tokyo/skytree.jpg"
-        ]
-      };
-      setData(json);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch("http://localhost:8000/AllImages/");
+                if (!res.ok) throw new Error("Failed to fetch images");
+                const json: ImageDataItem[] = await res.json();
+                setData(json);
+
+                const initialOpen: { [key: string]: boolean } = {};
+                json.forEach(item => {
+                    initialOpen[item.label] = false;
+                });
+                setOpenLabels(initialOpen);
+            } catch (err) {
+                console.error("Fetch error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const toggleLabel = (label: string) => {
+        setOpenLabels(prev => ({ ...prev, [label]: !prev[label] }));
     };
 
-    fetchData();
-  }, []);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val) && val > 0) setInputMaxImages(val);
+    };
 
+    const handleConfirm = () => {
+        setMaxImages(inputMaxImages);
+    };
 
-  return (
-    <div className="container">
-      {Object.entries(data).map(([category, images]) => (
-        <div key={category} className="category-section">
-          <h2 className="category-title">{category}</h2>
-          <div className="images-grid">
-            {images.map((img, idx) => (
-              <div key={idx} className="image-card">
-                <img src={img} alt={`${category}-${idx}`} className="image-item" />
-              </div>
+    if (loading) return <p className="text-center">Loading images...</p>;
+
+    return (
+        <div className="container">
+            <h1 className="text-5xl">Dataset All Images</h1>
+            <div className="max-images-control">
+                <label htmlFor="maxImagesInput"><h3>Max images :</h3></label>
+                <input id="maxImagesInput" type="number" value={inputMaxImages} onChange={handleInputChange} min={1} className="max-images-input"/>
+                <button onClick={handleConfirm} className="max-images-btn">
+                    Confirm
+                </button>
+            </div>
+
+            {data.map(({ label, images }) => (
+                <div key={label} className="category-section">
+                    <h2
+                        className="category-title cursor-pointer select-none"
+                        onClick={() => toggleLabel(label)}
+                    >
+                        {label} {openLabels[label] ? "▴" : "▾"}
+                    </h2>
+                    {openLabels[label] && (
+                        <div className="images-grid">
+                            {images.slice(0, maxImages).map((img, idx) => (
+                                <div key={idx} className="image-card">
+                                    <img src={img} alt={`${label}-${idx}`} className="image-item" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <hr className="line_category" />
+                </div>
             ))}
-          </div>
         </div>
-      ))}
-    </div>
-  )
-}
-export default show_data
+    );
+};
+
+export default show_data;

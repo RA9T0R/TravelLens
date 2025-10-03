@@ -17,9 +17,12 @@ const predict = () => {
     }
   };
 
-  const handleTopKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTopK(parseInt(e.target.value, 10));
-  };
+ const handleTopKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  let val = parseInt(e.target.value, 10);
+  if (isNaN(val) || val < 1) val = 1;     
+  if (val > 50) val = 50;                 
+  setTopK(val);
+};
 
   const handleSubmit = async () => {
     if (!fileImage) {
@@ -56,7 +59,7 @@ const predict = () => {
 
       <div className="input-section">
         <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
-        <input type="number" value={topK} onChange={handleTopKChange} min={1} className="number-input" placeholder="Top K"/>
+        <input type="number" value={topK} onChange={handleTopKChange} min={1} max={50} className="number-input" placeholder="Top K"/>
         <button onClick={handleSubmit} className="search-btn" disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
