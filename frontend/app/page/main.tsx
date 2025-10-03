@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "~/components/api";
+import "../app.css"; // import ไฟล์ CSS
 
 export function Main() {
   const [fileImage, setFileImage] = useState<File | null>(null);
@@ -49,49 +50,37 @@ export function Main() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Image Search</h1>
+    <div className="container">
+      <h1 className="title">Image Search</h1>
 
-      <input type="file" onChange={handleFileChange} accept="image/*" className="mb-2" />
-      <input
-        type="number"
-        value={topK}
-        onChange={handleTopKChange}
-        min={1}
-        className="border p-1 mb-2"
-        placeholder="Top K"
-      />
-      <button
-        onClick={handleSubmit}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        disabled={loading}
-      >
-        {loading ? "Searching..." : "Search"}
-      </button>
-
+      <div className="input-section">
+        <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
+        <input type="number" value={topK} onChange={handleTopKChange} min={1} className="number-input" placeholder="Top K"/>
+        <button onClick={handleSubmit} className="search-btn" disabled={loading}>
+          {loading ? "Searching..." : "Search"}
+        </button>
+      </div>
 
       {preview && (
-        <div className="mb-4">
-          <h2 className="font-semibold">Uploaded Image:</h2>
-          <img src={preview} alt="Uploaded" className="w-48 h-auto" />
+        <div className="preview-section">
+          <h2>Uploaded Image:</h2>
+          <img src={preview} alt="Uploaded" className="preview-img" />
         </div>
       )}
 
-      <div>
-        {results.length > 0 && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Results:</h2>
-            <ul>
-              {results.map((res, idx) => (
-                <li key={idx} className="mb-2">
-                  <p>{res.label}</p>
-                  <img src={res.image_path} alt={res.label} className="w-48 h-auto" />
-                </li>
-              ))}
-            </ul>
+      {results.length > 0 && (
+        <div className="results-section">
+          <h2>Results:</h2>
+          <div className="results-grid">
+            {results.map((res, idx) => (
+              <div key={idx} className="result-card">
+                <p className="result-label">{res.label}</p>
+                <img src={res.image_path} alt={res.label} className="result-img" />
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
