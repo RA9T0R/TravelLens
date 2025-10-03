@@ -167,12 +167,11 @@ body {
   text-align: center;
 }
 
-
 .images-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: center; 
+  justify-content: flex-start;
 }
 
 .image-card {

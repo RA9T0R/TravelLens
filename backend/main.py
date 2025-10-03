@@ -123,4 +123,6 @@ def get_all_images(db: db_dependency):
     for img in images:
         grouped[img.label].append(img.image_path)
 
-    return grouped
+    # Convert to list of objects
+    result = [{"label": label, "images": imgs} for label, imgs in grouped.items()]
+    return result
