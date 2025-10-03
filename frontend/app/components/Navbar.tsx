@@ -8,10 +8,11 @@ const Navbar = () => {
     { name: "Predict", path: "/predict" },
     { name: "All Images", path: "/AllImage" },
     { name: "Upload", path: "/upload_data" },
+    { name: "Description", path: "/description" },
   ];
 
   return (
-    <div className="">
+    <div className="bg-white shadow-md px-6 py-4 w-full top-0 z-50 mb-10">
       <div className="container mx-auto flex items-center justify-between">
         <div className="text-2xl font-bold text-blue-600">TravelLens</div>
         <div className="flex space-x-6">

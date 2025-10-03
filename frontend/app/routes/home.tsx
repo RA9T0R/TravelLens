@@ -1,16 +1,10 @@
 import type { Route } from "./+types/home";
-// import { Predict } from "~/page/predict";
-// import { ShowData } from "~/page/show_data";
-// import UploadData from "~/page/upload_data";
-import { Link } from "react-router";
-import api from "~/components/api";
-import Navbar from "~/components/Navbar";
-import Welcome from "~/page/Welcome";
+import Welcome from "~/routes/Welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Travel Lens" },
+    { name: "Machine Learning Project", content: "Content based image retrieval​" },
   ];
 }
 
