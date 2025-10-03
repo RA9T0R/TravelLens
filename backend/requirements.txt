@@ -43,6 +43,7 @@ opt_einsum==3.4.0
 optree==0.17.0
 packaging==25.0
 pandas==2.3.2
+pgvector==0.4.1
 pillow==11.3.0
 postgrest==2.20.0
 protobuf==6.32.1
