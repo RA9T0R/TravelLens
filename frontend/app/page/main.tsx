@@ -73,9 +73,15 @@ export function Main() {
           <h2>Results:</h2>
           <div className="results-grid">
             {results.map((res, idx) => (
-              <div key={idx} className="result-card">
-                <p className="result-label">{res.label}</p>
-                <img src={res.image_path} alt={res.label} className="result-img" />
+              <div key={idx} className="result-item">
+                <h2 className="result-label">{res.label}</h2>
+                <div className="result-cards-wrapper">
+                  {res.images.map((img: string, imgIdx: number) => (
+                    <div key={imgIdx} className="result-card">
+                      <img src={img} alt={res.label} className="result-img" />
+                    </div> 
+                  ))}
+                </div>
               </div>
             ))}
           </div>
