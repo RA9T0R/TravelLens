@@ -16,6 +16,8 @@ body {
 }
 */
 
+/*----------------------------------------------------*/
+/*main page*/
 /* Container */
 .container {
   max-width: 960px;
@@ -104,15 +106,16 @@ body {
 
 .results-grid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px; /* space between groups */
-  justify-content: center;
+  flex-direction: column; 
+  gap: 30px; 
+  align-items: center;
 }
 
 .result-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%; 
   margin-bottom: 20px;
 }
 
@@ -151,7 +154,15 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: center;
+  justify-content: flex-start;
+}
+
+.result-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start; 
+  width: 100%;
 }
 
 
@@ -162,6 +173,8 @@ body {
   margin: 40px auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  text-align: center;
+  color: #1D4ED8;
 }
 
 .category-section {
@@ -169,13 +182,20 @@ body {
 }
 
 .category-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #1D4ED8;
+  font-size: 1.5rem;
+  color: #000000;
   margin-bottom: 15px;
-  text-align: center;
+  text-align: left;
+  align-items: center;
+  justify-content: center;
 }
 
+.line_category {
+  border: none;
+  border-top: 3px solid #ccc;
+  margin: 30px 0;
+  padding: 0.2rem ;
+}
 .images-grid {
   display: flex;
   flex-wrap: wrap;
@@ -203,3 +223,41 @@ body {
   object-fit: cover;
   display: block;
 }
+
+/* input number of img */
+
+.max-images-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.max-images-input {
+  width: 60px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.max-images-input:focus {
+  border-color: #1D4ED8;
+  box-shadow: 0 0 3px rgba(29, 78, 216, 0.5);
+}
+
+.max-images-btn {
+  padding: 6px 12px;
+  background-color: #1D4ED8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.max-images-btn:hover {
+  background-color: #2563EB;
+}
+
