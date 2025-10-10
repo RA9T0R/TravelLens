@@ -35,7 +35,7 @@
   max-width: 960px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  /* background-color: #f9f9f9; */
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
@@ -45,7 +45,7 @@
 .title {
   text-align: center;
   font-size: 2rem;
-  color: #1D4ED8;
+  /* color: #1D4ED8; */
   margin-bottom: 30px;
   font-weight: bold;
 }
@@ -71,7 +71,7 @@
 }
 
 .search-btn {
-  background-color: #1D4ED8;
+  /* background-color: #1D4ED8; */
   color: white;
   border: none;
   padding: 10px 20px;
@@ -187,7 +187,7 @@
   padding: 20px;
   font-family: Arial, sans-serif;
   text-align: center;
-  color: #1D4ED8;
+  /* color: #1D4ED8; */
 }
 
 .category-section {
@@ -196,7 +196,7 @@
 
 .category-title {
   font-size: 1.5rem;
-  color: #000000;
+  /* color: #000000; */
   margin-bottom: 15px;
   text-align: left;
   align-items: center;
@@ -262,7 +262,7 @@
 
 .max-images-btn {
   padding: 6px 12px;
-  background-color: #1D4ED8;
+  /* background-color: #1D4ED8; */
   color: white;
   border: none;
   border-radius: 6px;
@@ -283,7 +283,7 @@
   max-width: 500px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: #ffffff;
+  /* background: #ffffff; */
   border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
@@ -293,14 +293,14 @@
   text-align: center;
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #1f2937; /* สีเทาเข้ม */
+  /* color: #1f2937; สีเทาเข้ม */
 }
 
 .upload-container label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #374151;
+  /* color: #374151; */
 }
 
 .upload-container select,
@@ -356,7 +356,7 @@
   padding: 0.7rem;
   border: none;
   border-radius: 0.7rem;
-  color: white;
+  /* color: white; */
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;

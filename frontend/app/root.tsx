@@ -44,10 +44,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <>
+    <div className="border border-bg dark:border-Dark_bg min-h-screen bg-bg dark:bg-Dark_bg text-text dark:text-Dark_text">
       <Navbar />
       <Outlet />
-    </>
+    </div>
   );
 }
 

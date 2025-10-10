@@ -54,26 +54,26 @@ const predict = () => {
 
 
   return (
-    <div className="container">
-      <h1 className="title">Image Search</h1>
+    <div className="container bg-surface dark:bg-Dark_surface">
+      <h1 className="title text-text dark:text-Dark_text">Image Search</h1>
 
-      <div className="input-section">
+      <div className="input-section text-text dark:text-Dark_text">
         <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
         <input type="number" value={topK} onChange={handleTopKChange} min={1} max={50} className="number-input" placeholder="Top K"/>
-        <button onClick={handleSubmit} className="search-btn" disabled={loading}>
+        <button onClick={handleSubmit} className="search-btn bg-primary dark:bg-Dark_primary" disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
       </div>
 
       {preview && (
-        <div className="preview-section flex flex-col items-center">
+        <div className="preview-section flex flex-col items-center text-text dark:text-Dark_text">
           <h2>Uploaded Image:</h2>
           <img src={preview} alt="Uploaded" className="preview-img" />
         </div>
       )}
 
       {results.length > 0 && (
-        <div className="results-section">
+        <div className="results-section text-text dark:text-Dark_text">
           <h2>Results:</h2>
           <div className="results-grid">
             {results.map((res, idx) => (

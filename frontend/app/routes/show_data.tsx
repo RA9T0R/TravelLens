@@ -52,12 +52,12 @@ const show_data = () => {
     if (loading) return <p className="text-center">Loading images...</p>;
 
     return (
-        <div className="container">
+        <div className="container bg-surface dark:bg-Dark_surface text-text dark:text-Dark_text">
             <h1 className="text-3xl lg:text-5xl mb-8 lg:mb-10">Dataset All Images</h1>
             <div className="max-images-control">
                 <label htmlFor="maxImagesInput"><h3>Max images :</h3></label>
                 <input id="maxImagesInput" type="number" value={inputMaxImages} onChange={handleInputChange} min={1} className="max-images-input"/>
-                <button onClick={handleConfirm} className="max-images-btn">
+                <button onClick={handleConfirm} className="max-images-btn bg-primary dark:bg-Dark_primary">
                     Confirm
                 </button>
             </div>
