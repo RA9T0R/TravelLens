@@ -114,7 +114,7 @@ const UploadData = () => {
     <div className="upload-container max-w-lg mx-auto bg-white rounded-2xl shadow p-6 mt-8">
       <h2 className="text-2xl font-bold mb-4 text-center">Upload Training Images</h2>
 
-      <div className="mb-4 flex gap-4">
+      <div className="label-options mb-4">
         <label>
           <input
             type="radio"

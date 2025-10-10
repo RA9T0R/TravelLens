@@ -380,3 +380,16 @@
   color: #374151;
 }
 
+/* Container ของ label options */
+.label-options {
+  display: flex;
+  gap: 1rem; /* เว้นระยะห่างระหว่างปุ่ม */
+}
+
+/* Responsive: stack แนวตั้งบนมือถือ */
+@media (max-width: 640px) {
+  .label-options {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
