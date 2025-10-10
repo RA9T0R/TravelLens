@@ -66,7 +66,7 @@ const predict = () => {
       </div>
 
       {preview && (
-        <div className="preview-section flex flex-col items-center" >
+        <div className="preview-section flex flex-col items-center">
           <h2>Uploaded Image:</h2>
           <img src={preview} alt="Uploaded" className="preview-img" />
         </div>
