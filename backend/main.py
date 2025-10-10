@@ -125,3 +125,20 @@ def get_all_images(db: db_dependency):
 
     result = [{"label": label, "images": imgs} for label, imgs in grouped.items()]
     return result
+
+
+@app.get("/LabelsSummary/")
+def get_labels_summary(db: db_dependency):
+    images = db.query(models.Images).all()
+
+    label_counts = defaultdict(int)
+    for img in images:
+        label_counts[img.label] += 1
+
+    result = [
+        {"label": label, "count": count}
+        for label, count in label_counts.items()
+    ]
+
+    result.sort(key=lambda x: x["label"])
+    return {"total_labels": len(result), "summary": result}
