@@ -114,7 +114,6 @@ async def upload(
 
     return {"label": label, "images_path": image_urls}
 
-
 @app.get("/AllImages/")
 def get_all_images(db: db_dependency):
     images = db.query(models.Images).all()
@@ -125,7 +124,6 @@ def get_all_images(db: db_dependency):
 
     result = [{"label": label, "images": imgs} for label, imgs in grouped.items()]
     return result
-
 
 @app.get("/LabelsSummary/")
 def get_labels_summary(db: db_dependency):
