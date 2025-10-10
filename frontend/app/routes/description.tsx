@@ -1,6 +1,6 @@
 const Description = () => {
   return (
-    <div className="bg-bg dark:bg-Dark_bg min-h-screen py-12 px-6 md:px-20 text-text dark:text-Dark_text">
+    <div className="py-12 px-6 md:px-20">
       <div className="h-screen mx-auto">
         {/* Title */}
         <h1 className="text-xl md:text-3xl lg:text-5xl font-extrabold text-center mb-12">

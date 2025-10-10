@@ -111,7 +111,7 @@ const UploadData = () => {
   };
 
   return (
-    <div className="upload-container max-w-lg mx-auto bg-white rounded-2xl shadow p-6 mt-8">
+    <div className="upload-container max-w-lg mx-auto rounded-2xl shadow p-6 mt-8 bg-surface dark:bg-Dark_surface text-text dark:text-Dark_text">
       <h2 className="text-2xl font-bold mb-4 text-center">Upload Training Images</h2>
 
       <div className="label-options mb-4">
@@ -148,7 +148,7 @@ const UploadData = () => {
         <select
           value={selectedLabel}
           onChange={(e) => setSelectedLabel(e.target.value)}
-          className="border p-2 rounded w-full mb-4"
+          className="border p-2 rounded w-full mb-4 "
         >
           <option value="">-- Select label --</option>
           {labels.map((item) => (
