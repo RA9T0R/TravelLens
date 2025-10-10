@@ -1,9 +1,11 @@
+import numpy as np
+import certifi 
+import os
+from numpy.linalg import norm
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from models import Images
 from supabase import create_client
-import os
-import certifi  # <-- import certifi
 
 # ===== Load .env =====
 from dotenv import load_dotenv
@@ -22,6 +24,11 @@ BUCKET_NAME = "Images"
 
 # ===== Insert new image record into DB =====
 def insert_image(db: Session, label: str, image_path: str, embedding):
+    existing = db.query(Images).filter_by(image_path=image_path).first()
+    if existing:
+        print(f"Image already exists in DB: {image_path}")
+        return existing
+
     if hasattr(embedding, "tolist"):
         embedding = embedding.tolist()
     if len(embedding) != 2048:
@@ -33,8 +40,11 @@ def insert_image(db: Session, label: str, image_path: str, embedding):
     db.refresh(db_image)
     return db_image
 
+
 # ===== Search similar images in DB =====
 def search_similar(db: Session, query_embedding: list, k: int = 5):
+    query_embedding = np.array(query_embedding)
+    query_embedding = query_embedding / norm(query_embedding)
     query_vector_str = "[" + ",".join(map(str, query_embedding)) + "]"
     sql = text(f"""
         SELECT label, image_path
