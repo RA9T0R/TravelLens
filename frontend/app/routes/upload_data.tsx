@@ -152,7 +152,7 @@ const UploadData = () => {
         >
           <option value="">-- Select label --</option>
           {labels.map((item) => (
-            <option key={item.label} value={item.label}>
+            <option key={item.label} value={item.label} className="text-black">
               {item.label} ({item.count})
             </option>
           ))}
