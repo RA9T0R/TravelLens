@@ -1,5 +1,5 @@
-from fastapi import FastAPI, UploadFile, File,Form, Depends, HTTPException
-from typing import Annotated
+from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException
+from typing import Annotated, List
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict
@@ -8,10 +8,13 @@ import models, schemas, crud
 from database import engine, SessionLocal
 from embeddings import get_embedding
 import os
+import time # <- Import for retry logic
 
+# --- Configuration ---
 app = FastAPI(title="TravelLens Backend")
 
-origins = ["http://localhost:5173"]
+# NOTE: For production, you should update this to your actual frontend URL (e.g., your Render frontend URL)
+origins = ["http://localhost:5173", "https://your-frontend-url.onrender.com"] 
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ===== Database =====
+# ===== Database Dependency =====
 def get_db():
     db = SessionLocal()
     try:
@@ -30,7 +33,28 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
-models.Base.metadata.create_all(bind=engine)
+
+# --- CRITICAL FIX: Database Retry Logic ---
+# Attempt to connect to the database multiple times during server startup
+MAX_DB_RETRIES = 5
+RETRY_DELAY = 5 # seconds
+
+for attempt in range(MAX_DB_RETRIES):
+    try:
+        print("Attempting to connect to database and create tables...")
+        models.Base.metadata.create_all(bind=engine)
+        print("Database connection and table check successful.")
+        break  # Exit loop on success
+    except Exception as e:
+        if attempt < MAX_DB_RETRIES - 1:
+            print(f"Database connection failed (Attempt {attempt + 1}/{MAX_DB_RETRIES}). Retrying in {RETRY_DELAY} seconds...")
+            time.sleep(RETRY_DELAY)
+        else:
+            print("Database connection failed after all retries. Exiting.")
+            # Re-raise the exception to crash the server if all retries fail
+            raise e 
+# ---------------------------------------------
+
 
 # ===== Predict Endpoint =====
 @app.post("/predict/")
@@ -39,83 +63,96 @@ async def predict(
     top_k: int = Form(...),
     db: Session = Depends(get_db)
 ):
+    """
+    Accepts a query image and returns a ranked list of similar images from the database.
+    """
     tmp_path = f"temp_{file.filename}"
-
+    
     # Save uploaded file temporarily
     with open(tmp_path, "wb") as f:
         f.write(await file.read())
 
-    # Generate embedding
+    query_embedding = None
     try:
+        # Generate embedding
         query_embedding = get_embedding(tmp_path)
-    except Exception as e:
-        os.remove(tmp_path)
-        raise HTTPException(status_code=500, detail=f"Failed to get embedding: {e}")
 
-    # Search similar images
-    try:
+        # Search similar images
+        # The result set will contain image_path, label, and distance
         results = crud.search_similar(db, query_embedding.tolist(), k=top_k)
+    
     except Exception as e:
-        os.remove(tmp_path)
-        raise HTTPException(status_code=500, detail=f"DB search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Prediction failed (Embedding or DB search): {e}")
+    
     finally:
-        os.remove(tmp_path)  # Clean up temporary file
+        # Clean up temporary file regardless of success or failure
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path) 
 
-    # === Group results by label ===
+    # === Group results by label for clean frontend display ===
     grouped = defaultdict(list)
     for r in results:
-        grouped[r["label"]].append(r["image_path"])
+        # Only take the image_path and distance for the final output
+        grouped[r["label"]].append({"path": r["image_path"], "distance": r.get("distance", None)})
 
-    # Format response
+    # Format response: [{"label": "Landmark", "images": [{"path": url, "distance": val}, ...]}, ...]
     grouped_results = [{"label": label, "images": paths} for label, paths in grouped.items()]
 
     return {"results": grouped_results}
 
+
+# ===== Upload Endpoint =====
 @app.post("/upload/")
 async def upload(
-    files: list[UploadFile] = File(...),   # multiple files
-    label: str = Form(...),                # one label for all
+    files: List[UploadFile] = File(...), 
+    label: str = Form(...), 
     db: Session = Depends(get_db)
 ):
+    """
+    Accepts multiple images with one common label, generates embeddings, 
+    uploads images to Supabase storage, and inserts metadata into the PostgreSQL DB.
+    """
     image_urls = []
-
+    
     for file in files:
         tmp_path = f"temp_{file.filename}"
         
         # Save temporarily
-        with open(tmp_path, "wb") as f:
-            f.write(await file.read())
-
-        # Generate embedding
         try:
+            with open(tmp_path, "wb") as f:
+                f.write(await file.read())
+            
+            # 1. Generate embedding
             embedding = get_embedding(tmp_path)
-        except Exception as e:
-            os.remove(tmp_path)
-            raise HTTPException(status_code=500, detail=f"Embedding failed: {e}")
 
-        # Upload to Supabase
-        try:
+            # 2. Upload to Supabase Storage (Assumes crud.upload_image_to_supabase handles this)
             image_url = crud.upload_image_to_supabase(tmp_path, folder=label)
-        except Exception as e:
-            os.remove(tmp_path)
-            raise HTTPException(status_code=500, detail=f"Upload failed: {e}")
 
-        # Insert into DB
-        try:
+            # 3. Insert into PostgreSQL DB
             crud.insert_image(db, label=label, image_path=image_url, embedding=embedding)
+            
+            # 4. Collect URL
+            image_urls.append(image_url)
+
         except Exception as e:
-            os.remove(tmp_path)
-            raise HTTPException(status_code=500, detail=f"DB insert failed: {e}")
+            # Reraise a clean HTTPException if any step fails
+            raise HTTPException(status_code=500, detail=f"Upload processing failed for {file.filename}: {e}")
+        
         finally:
-            os.remove(tmp_path)
+            # Clean up the temporary file
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path) 
 
-        # Collect image URL
-        image_urls.append(image_url)
+    return {"label": label, "uploaded_count": len(image_urls), "images_path": image_urls}
 
-    return {"label": label, "images_path": image_urls}
+
+# ===== Retrieval Endpoints (Read Only) =====
 
 @app.get("/AllImages/")
 def get_all_images(db: db_dependency):
+    """
+    Retrieves all images and groups them by their label.
+    """
     images = db.query(models.Images).all()
 
     grouped = defaultdict(list)
@@ -127,6 +164,9 @@ def get_all_images(db: db_dependency):
 
 @app.get("/LabelsSummary/")
 def get_labels_summary(db: db_dependency):
+    """
+    Returns a summary of all unique labels and the count of images under each label.
+    """
     images = db.query(models.Images).all()
 
     label_counts = defaultdict(int)
