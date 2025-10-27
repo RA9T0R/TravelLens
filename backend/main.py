@@ -140,3 +140,4 @@ def get_labels_summary(db: db_dependency):
 
     result.sort(key=lambda x: x["label"])
     return {"total_labels": len(result), "summary": result}
+
