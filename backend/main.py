@@ -8,7 +8,7 @@ import models, schemas, crud
 from database import engine, SessionLocal
 from embeddings import get_embedding
 import os
-import time # <- Import for retry logic
+import time
 
 # --- Configuration ---
 app = FastAPI(title="TravelLens Backend")
@@ -41,10 +41,8 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-# --- CRITICAL FIX: Database Retry Logic ---
-# Attempt to connect to the database multiple times during server startup
 MAX_DB_RETRIES = 5
-RETRY_DELAY = 5 # seconds
+RETRY_DELAY = 5 
 
 for attempt in range(MAX_DB_RETRIES):
     try:
@@ -58,10 +56,7 @@ for attempt in range(MAX_DB_RETRIES):
             time.sleep(RETRY_DELAY)
         else:
             print("Database connection failed after all retries. Exiting.")
-            # Re-raise the exception to crash the server if all retries fail
             raise e 
-# ---------------------------------------------
-
 
 # ===== Predict Endpoint =====
 @app.post("/predict/")

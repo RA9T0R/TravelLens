@@ -7,7 +7,6 @@ from sqlalchemy import text
 from models import Images
 from supabase import create_client
 
-# ===== Load .env =====
 from dotenv import load_dotenv
 load_dotenv()
 
