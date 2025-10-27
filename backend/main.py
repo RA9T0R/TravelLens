@@ -13,12 +13,19 @@ import time # <- Import for retry logic
 # --- Configuration ---
 app = FastAPI(title="TravelLens Backend")
 
-# NOTE: For production, you should update this to your actual frontend URL (e.g., your Render frontend URL)
-origins = os.getenv("FRONTEND_URL")
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
+    "http://127.0.0.1:5173"  
+]
+
+production_origin = os.getenv("FRONTEND_URL")
+
+if production_origin:
+    DEFAULT_ALLOWED_ORIGINS.append(production_origin)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=DEFAULT_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
