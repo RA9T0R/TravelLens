@@ -1,97 +1,123 @@
 import { useState } from "react";
+// Assuming you have a standard React Router setup, you don't need 'useLocation' or 'Link' here, 
+// so the initial error was likely caused by implicit form submission
 import api from "~/components/api";
 import "../app.css"; // import ไฟล์ CSS
 
-const predict = () => {
-  const [fileImage, setFileImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null); 
-  const [topK, setTopK] = useState<number>(5);
-  const [results, setResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+// NOTE: It is best practice to name the component with a capital letter (Predict)
+const Predict = () => {
+    const [fileImage, setFileImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null); 
+    const [topK, setTopK] = useState<number>(5);
+    const [results, setResults] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFileImage(file);
-      setPreview(URL.createObjectURL(file)); 
-    }
-  };
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            setFileImage(file);
+            // Revoke the old URL object to prevent memory leaks
+            if (preview) {
+                URL.revokeObjectURL(preview);
+            }
+            setPreview(URL.createObjectURL(file)); 
+        }
+    };
 
- const handleTopKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  let val = parseInt(e.target.value, 10);
-  if (isNaN(val) || val < 1) val = 1;     
-  if (val > 50) val = 50;                 
-  setTopK(val);
-};
+    const handleTopKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let val = parseInt(e.target.value, 10);
+        if (isNaN(val) || val < 1) val = 1; 
+        if (val > 50) val = 50; 
+        setTopK(val);
+    };
 
-  const handleSubmit = async () => {
-    if (!fileImage) {
-      alert("Please select a file first!");
-      return;
-    }
+    // 🟢 FIX: Handle FormEvent and use event.preventDefault()
+    const handleSubmit = async (e: React.FormEvent) => { 
+        e.preventDefault(); // 🛑 CRITICAL: Stop React Router/browser from intercepting the request
+        
+        if (!fileImage) {
+            alert("Please select a file first!");
+            return;
+        }
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-      const formData = new FormData();
-      formData.append("file", fileImage);
-      formData.append("top_k", topK.toString());
+        try {
+            const formData = new FormData();
+            formData.append("file", fileImage);
+            formData.append("top_k", topK.toString());
 
-      const response = await api.post("/predict/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+            const response = await api.post("/predict/", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-      setResults(response.data.results);
-    } catch (err) {
-      console.error("API error:", err);
-      alert("Failed to fetch results");
-    } finally {
-      setLoading(false);
-    }
-  };
+            setResults(response.data.results);
+        } catch (err) {
+            console.error("API error:", err);
+            alert("Failed to fetch results");
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
-  return (
-    <div className="container bg-surface dark:bg-Dark_surface">
-      <h1 className="title text-text dark:text-Dark_text">Image Search</h1>
+    return (
+        <div className="container bg-surface dark:bg-Dark_surface">
+            <h1 className="title text-text dark:text-Dark_text">Image Search</h1>
 
-      <div className="input-section text-text dark:text-Dark_text">
-        <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
-        <input type="number" value={topK} onChange={handleTopKChange} min={1} max={50} className="number-input" placeholder="Top K"/>
-        <button onClick={handleSubmit} className="search-btn bg-primary dark:bg-Dark_primary" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
-        </button>
-      </div>
+            {/* 🟢 FIX: Wrap inputs in an explicit <form> and attach handleSubmit to onSubmit */}
+            <form onSubmit={handleSubmit} className="input-section text-text dark:text-Dark_text">
+                <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
+                
+                <input 
+                    type="number" 
+                    value={topK} 
+                    onChange={handleTopKChange} 
+                    min={1} 
+                    max={50} 
+                    className="number-input" 
+                    placeholder="Top K"
+                />
+                
+                {/* 🟢 FIX: Change button type to 'submit' so it triggers form's onSubmit */}
+                <button type="submit" className="search-btn bg-primary dark:bg-Dark_primary" disabled={loading}>
+                    {loading ? "Searching..." : "Search"}
+                </button>
+            </form>
 
-      {preview && (
-        <div className="preview-section flex flex-col items-center text-text dark:text-Dark_text">
-          <h2>Uploaded Image:</h2>
-          <img src={preview} alt="Uploaded" className="preview-img" />
-        </div>
-      )}
-
-      {results.length > 0 && (
-        <div className="results-section text-text dark:text-Dark_text">
-          <h2>Results:</h2>
-          <div className="results-grid">
-            {results.map((res, idx) => (
-              <div key={idx} className="result-item">
-                <h2 className="result-label">{res.label}</h2>
-                <div className="result-cards-wrapper">
-                  {res.images.map((img: string, imgIdx: number) => (
-                    <div key={imgIdx} className="result-card">
-                      <img src={img} alt={res.label} className="result-img" />
-                    </div> 
-                  ))}
+            {preview && (
+                <div className="preview-section flex flex-col items-center text-text dark:text-Dark_text">
+                    <h2>Uploaded Image:</h2>
+                    <img src={preview} alt="Uploaded" className="preview-img" />
                 </div>
-              </div>
-            ))}
-          </div>
+            )}
+
+            {results.length > 0 && (
+                <div className="results-section text-text dark:text-Dark_text">
+                    <h2>Results:</h2>
+                    <div className="results-grid">
+                        {results.map((res, idx) => (
+                            <div key={idx} className="result-item">
+                                <h2 className="result-label">{res.label}</h2>
+                                <div className="result-cards-wrapper">
+                                    {/* 🟢 Note: Assuming img is the image URL string */}
+                                    {res.images.map((img: { path: string, distance: number }, imgIdx: number) => ( 
+                                        <div key={imgIdx} className="result-card">
+                                            <img src={img.path} alt={res.label} className="result-img" />
+                                            {/* You might want to display the distance here */}
+                                        </div> 
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
-export default predict
+
+// NOTE: Export the component with the corrected capital letter name
+export default Predict;
