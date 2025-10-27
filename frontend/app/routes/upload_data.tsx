@@ -11,13 +11,16 @@ const UploadData = () => {
   const [progress, setProgress] = useState(0);
   const [mode, setMode] = useState<"new" | "existing" | "">("");
 
-  const loadLabels = () => {
-    fetch("http://localhost:8000/LabelsSummary/")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.summary) setLabels(data.summary);
-      })
-      .catch((err) => console.error("❌ Failed to fetch labels:", err));
+  // ✅ เปลี่ยนจาก fetch() เป็น api.get()
+  const loadLabels = async () => {
+    try {
+      const response = await api.get("/LabelsSummary/");
+      if (response.data.summary) {
+        setLabels(response.data.summary);
+      }
+    } catch (err) {
+      console.error("❌ Failed to fetch labels:", err);
+    }
   };
 
   useEffect(() => {
