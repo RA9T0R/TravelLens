@@ -31,9 +31,8 @@ const Predict = () => {
         setTopK(val);
     };
 
-    // 🟢 FIX: Handle FormEvent and use event.preventDefault()
     const handleSubmit = async (e: React.FormEvent) => { 
-        e.preventDefault(); // 🛑 CRITICAL: Stop React Router/browser from intercepting the request
+        e.preventDefault(); 
         
         if (!fileImage) {
             alert("Please select a file first!");

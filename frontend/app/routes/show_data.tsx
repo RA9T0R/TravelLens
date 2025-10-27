@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "~/components/api";
 import "../app.css";
 
 type ImageDataItem = {
@@ -16,16 +17,15 @@ const show_data = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch("http://localhost:8000/AllImages/");
-                if (!res.ok) throw new Error("Failed to fetch images");
-                const json: ImageDataItem[] = await res.json();
+                const response = await api.get("/AllImages/");
+                const json: ImageDataItem[] = response.data; 
                 setData(json);
-
                 const initialOpen: { [key: string]: boolean } = {};
                 json.forEach(item => {
                     initialOpen[item.label] = false;
                 });
                 setOpenLabels(initialOpen);
+
             } catch (err) {
                 console.error("Fetch error:", err);
             } finally {

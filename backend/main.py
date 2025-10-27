@@ -63,9 +63,6 @@ async def predict(
     top_k: int = Form(...),
     db: Session = Depends(get_db)
 ):
-    """
-    Accepts a query image and returns a ranked list of similar images from the database.
-    """
     tmp_path = f"temp_{file.filename}"
     
     # Save uploaded file temporarily
@@ -74,11 +71,7 @@ async def predict(
 
     query_embedding = None
     try:
-        # Generate embedding
         query_embedding = get_embedding(tmp_path)
-
-        # Search similar images
-        # The result set will contain image_path, label, and distance
         results = crud.search_similar(db, query_embedding.tolist(), k=top_k)
     
     except Exception as e:
@@ -108,10 +101,6 @@ async def upload(
     label: str = Form(...), 
     db: Session = Depends(get_db)
 ):
-    """
-    Accepts multiple images with one common label, generates embeddings, 
-    uploads images to Supabase storage, and inserts metadata into the PostgreSQL DB.
-    """
     image_urls = []
     
     for file in files:
@@ -150,9 +139,6 @@ async def upload(
 
 @app.get("/AllImages/")
 def get_all_images(db: db_dependency):
-    """
-    Retrieves all images and groups them by their label.
-    """
     images = db.query(models.Images).all()
 
     grouped = defaultdict(list)
@@ -164,9 +150,6 @@ def get_all_images(db: db_dependency):
 
 @app.get("/LabelsSummary/")
 def get_labels_summary(db: db_dependency):
-    """
-    Returns a summary of all unique labels and the count of images under each label.
-    """
     images = db.query(models.Images).all()
 
     label_counts = defaultdict(int)
@@ -180,4 +163,3 @@ def get_labels_summary(db: db_dependency):
 
     result.sort(key=lambda x: x["label"])
     return {"total_labels": len(result), "summary": result}
-
