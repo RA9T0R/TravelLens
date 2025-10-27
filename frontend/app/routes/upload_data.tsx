@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "~/components/api";
 
 const UploadData = () => {
   const [labels, setLabels] = useState<{ label: string; count: number }[]>([]);
@@ -8,8 +9,7 @@ const UploadData = () => {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState(0);
-
-  const [mode, setMode] = useState<"new" | "existing" | "">(""); 
+  const [mode, setMode] = useState<"new" | "existing" | "">("");
 
   const loadLabels = () => {
     fetch("http://localhost:8000/LabelsSummary/")
@@ -46,7 +46,6 @@ const UploadData = () => {
     }
 
     const labelToUse = mode === "new" ? newLabel.trim() : selectedLabel;
-
     if (!labelToUse) {
       setMessage("⚠️ Label cannot be empty");
       return;
@@ -71,42 +70,34 @@ const UploadData = () => {
     files.forEach((file) => formData.append("files", file));
 
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://localhost:8000/upload/", true);
+      const response = await api.post("/upload/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (event) => {
+          if (event.total) {
+            setProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        },
+      });
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          setProgress(Math.round((event.loaded / event.total) * 100));
-        }
-      };
-
-      xhr.onload = () => {
-        setUploading(false);
-        if (xhr.status === 200) {
-          const res = JSON.parse(xhr.responseText);
-          setMessage(`✅ Upload successful (${res.uploaded_count} images)`);
-          setFiles([]);
-          setNewLabel("");
-          setSelectedLabel("");
-          setMode("");
-          setProgress(100);
-          loadLabels();
-        } else {
-          console.error(xhr.responseText);
-          setMessage("❌ Upload failed. Please try again");
-        }
-      };
-
-      xhr.onerror = () => {
-        setUploading(false);
-        setMessage("❌ Connection error. Please try again");
-      };
-
-      xhr.send(formData);
+      if (response.status === 200) {
+        const res = response.data;
+        setMessage(`✅ Upload successful (${res.uploaded_count} images)`);
+        setFiles([]);
+        setNewLabel("");
+        setSelectedLabel("");
+        setMode("");
+        setProgress(100);
+        loadLabels();
+      } else {
+        setMessage("❌ Upload failed. Please try again");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Upload error:", err);
+      setMessage("❌ Connection or server error. Please try again");
+    } finally {
       setUploading(false);
-      setMessage("❌ Unexpected error. Please try again");
     }
   };
 
@@ -124,7 +115,7 @@ const UploadData = () => {
             onChange={() => setMode("new")}
           /> Add New Label
         </label>
-        <label>
+        <label className="ml-4">
           <input
             type="radio"
             name="mode"
@@ -134,6 +125,7 @@ const UploadData = () => {
           /> Select Existing Label
         </label>
       </div>
+
       {mode === "new" && (
         <input
           type="text"
@@ -148,11 +140,11 @@ const UploadData = () => {
         <select
           value={selectedLabel}
           onChange={(e) => setSelectedLabel(e.target.value)}
-          className="border p-2 rounded w-full mb-4 "
+          className="border p-2 rounded w-full mb-4 text-black"
         >
           <option value="">-- Select label --</option>
           {labels.map((item) => (
-            <option key={item.label} value={item.label} className="text-black">
+            <option key={item.label} value={item.label}>
               {item.label} ({item.count})
             </option>
           ))}
@@ -174,6 +166,7 @@ const UploadData = () => {
           ))}
         </ul>
       )}
+
       {uploading && (
         <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
           <div className="bg-blue-600 h-3 rounded-full" style={{ width: `${progress}%` }}></div>
