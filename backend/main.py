@@ -14,7 +14,7 @@ import time # <- Import for retry logic
 app = FastAPI(title="TravelLens Backend")
 
 # NOTE: For production, you should update this to your actual frontend URL (e.g., your Render frontend URL)
-origins = ["http://localhost:5173", "https://your-frontend-url.onrender.com"] 
+origins = os.getenv("FRONTEND_URL")
 
 app.add_middleware(
     CORSMiddleware,
