@@ -11,7 +11,7 @@ const UploadData = () => {
   const [progress, setProgress] = useState(0);
   const [mode, setMode] = useState<"new" | "existing" | "">("");
 
-  // ✅ เปลี่ยนจาก fetch() เป็น api.get()
+
   const loadLabels = async () => {
     try {
       const response = await api.get("/LabelsSummary/");
