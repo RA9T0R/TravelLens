@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "~/components/api";
 
 const Welcome = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -8,8 +9,8 @@ const Welcome = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await fetch("http://localhost:8000/AllImages/");
-        const data = await res.json();
+        const res = await api.get("/AllImages/");
+        const data = res.data;
         const allImages: string[] = [];
         data.forEach((item: any) => allImages.push(...item.images));
         allImages.sort(() => Math.random() - 0.5); // สุ่ม

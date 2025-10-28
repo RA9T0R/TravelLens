@@ -64,7 +64,6 @@ def upload_image_to_supabase(local_path: str, folder: str):
     except Exception as e:
         raise RuntimeError(f"Failed to upload {local_path} to Supabase: {e}")
 
-    # Get public URL
     public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(remote_path)
     url = public_url['publicUrl'] if isinstance(public_url, dict) else public_url
     return url

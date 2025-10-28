@@ -25,7 +25,6 @@ const Navbar = () => {
     <nav className="bg-bg dark:bg-Dark_bg sticky top-0 z-50">
       <div className="flex items-center justify-between py-4 sm:py-5 px-4 sm:px-8 font-medium max-w-7xl mx-auto relative">
         <div className="md:w-1/4">
-          {/* Note: Ensure 'Text' in className is defined in your theme, or use 'text-text' */}
           <Link to="/" className="flex md:flex-col lg:flex-row items-center md:gap-3 dark:text-Dark_text">
             <MdOutlineTravelExplore className="size-8 sm:size-10 cursor-pointer" />
             <h1 className="w-24 md:w-36 text-sm xl:text-md sm:text-lg md:text-2xl text-Text text-center whitespace-nowrap">
@@ -53,7 +52,6 @@ const Navbar = () => {
 
         {/* Right section */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-6 md:w-1/4 justify-end md:justify-center">
-          {/* Dark/Light Toggle */}
           <button 
             onClick={toggleTheme} 
             className="w-9 h-9 sm:w-12 sm:h-12 bg-surface dark:bg-Dark_surface rounded-full shadow-lg shadow-Text/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110"

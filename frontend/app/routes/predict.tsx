@@ -1,10 +1,7 @@
 import { useState } from "react";
-// Assuming you have a standard React Router setup, you don't need 'useLocation' or 'Link' here, 
-// so the initial error was likely caused by implicit form submission
 import api from "~/components/api";
-import "../app.css"; // import ไฟล์ CSS
+import "../app.css";
 
-// NOTE: It is best practice to name the component with a capital letter (Predict)
 const Predict = () => {
     const [fileImage, setFileImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null); 
@@ -66,7 +63,6 @@ const Predict = () => {
         <div className="container bg-surface dark:bg-Dark_surface">
             <h1 className="title text-text dark:text-Dark_text">Image Search</h1>
 
-            {/* 🟢 FIX: Wrap inputs in an explicit <form> and attach handleSubmit to onSubmit */}
             <form onSubmit={handleSubmit} className="input-section text-text dark:text-Dark_text">
                 <input type="file" onChange={handleFileChange} accept="image/*" className="file-input"/>
                 
@@ -80,7 +76,6 @@ const Predict = () => {
                     placeholder="Top K"
                 />
                 
-                {/* 🟢 FIX: Change button type to 'submit' so it triggers form's onSubmit */}
                 <button type="submit" className="search-btn bg-primary dark:bg-Dark_primary" disabled={loading}>
                     {loading ? "Searching..." : "Search"}
                 </button>
@@ -101,11 +96,9 @@ const Predict = () => {
                             <div key={idx} className="result-item">
                                 <h2 className="result-label">{res.label}</h2>
                                 <div className="result-cards-wrapper">
-                                    {/* 🟢 Note: Assuming img is the image URL string */}
                                     {res.images.map((img: { path: string, distance: number }, imgIdx: number) => ( 
                                         <div key={imgIdx} className="result-card">
                                             <img src={img.path} alt={res.label} className="result-img" />
-                                            {/* You might want to display the distance here */}
                                         </div> 
                                     ))}
                                 </div>
@@ -118,5 +111,4 @@ const Predict = () => {
     );
 }
 
-// NOTE: Export the component with the corrected capital letter name
 export default Predict;
